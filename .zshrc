@@ -41,6 +41,7 @@ if whence bat >/dev/null; then
 fi
 
 # aliases
+alias userctl='systemctl --user'
 if whence eza >/dev/null; then
     export EZA_ICONS_AUTO=1
     alias eza='command eza --time-style=long-iso'
