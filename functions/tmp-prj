@@ -1,0 +1,3 @@
+local dir="$HOME/tmp/$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$dir"
+cd "$dir"
