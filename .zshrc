@@ -180,6 +180,10 @@ if whence fzf >/dev/null; then
     FZF_CTRL_T_OPTS="--preview '${FZF_PREVIEW_COMMAND}'"
 fi
 
+if whence sccache >/dev/null; then
+    export RUSTC_WRAPPER=sccache
+fi
+
 zupdate() {
     (cd "${ZDOTDIR}" && git pull) && . ${ZDOTDIR}/.zshenv && . ${ZDOTDIR}/.zshrc
 }
