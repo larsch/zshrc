@@ -3,3 +3,4 @@
 .zsh_history
 grml
 .cache/
+.zcompcache
