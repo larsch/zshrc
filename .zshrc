@@ -35,6 +35,10 @@ elif whence vim >/dev/null; then
     alias vi=vim
 fi
 
+if whence helix >/dev/null; then
+    alias hx=helix
+fi
+
 if whence bat >/dev/null; then
     export MANPAGER="sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -p -lman'"
     alias cat=bat
