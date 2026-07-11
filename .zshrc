@@ -49,10 +49,10 @@ alias userctl='systemctl --user'
 if whence eza >/dev/null; then
     export EZA_ICONS_AUTO=1
     alias eza='command eza --time-style=long-iso'
-    alias ls='eza --classify'
-    alias ll='eza --classify -l -b'
-    alias l='eza --classify -l -b'
-    alias ltr='eza --classify -l --sort modified'
+    alias ls='eza --classify=auto'
+    alias ll='eza --classify=auto -l -b'
+    alias l='eza --classify=auto -l -b'
+    alias ltr='eza --classify=auto -l --sort modified'
 
     # change default grml aliases to use eza
     alias dir='eza -lSrah'
