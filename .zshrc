@@ -188,6 +188,12 @@ if whence sccache >/dev/null; then
     export RUSTC_WRAPPER=sccache
 fi
 
+if ! whence xi >/dev/null; then
+	if [ -d "$HOME/prj/xi-agent" ]; then
+		alias xi='git -C $HOME/prj/xi-agent pull; cargo run --release --manifest-path "$HOME/prj/xi-agent/Cargo.toml"'
+	fi
+fi
+
 zupdate() {
     (cd "${ZDOTDIR}" && git pull) && . ${ZDOTDIR}/.zshenv && . ${ZDOTDIR}/.zshrc
 }
