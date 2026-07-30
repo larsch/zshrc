@@ -115,7 +115,10 @@ fi
 
 if [[ -d ~/home.git ]]; then
     alias dgit='git --work-tree=$HOME --git-dir=$HOME/home.git'
+elif [[ -d ~/.homegit ]]; then
+    alias dgit='git --work-tree=$HOME --git-dir=$HOME/.homegit'
 fi
+
 
 if whence nvim >/dev/null; then
     alias vi=nvim
