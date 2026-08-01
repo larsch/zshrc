@@ -1,4 +1,9 @@
-[[ "$TTY" != /dev/tty1 ]] || exec systemd-cat niri-session
+if [[ "$TTY" == /dev/tty1 ]]; then
+	export MOZ_ENABLE_WAYLAND=1
+	export QT_FONT_DPI=96
+	export PROTON_ENABLE_WAYLAND=1
+	exec systemd-cat niri-session
+fi
 
 # default to xterm if terminfo is missing
 [ -e "/usr/share/terminfo/${TERM:0:1}/${TERM}" ] || export TERM=xterm
