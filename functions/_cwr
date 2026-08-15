@@ -1,0 +1,17 @@
+#compdef cwr
+
+_cwr() {
+    _arguments \
+        '1:worktree slug:_cwr_worktrees' \
+        '*:cargo run argument:->args'
+
+    if [[ $state == args ]]; then
+        _message 'cargo run argument'
+    fi
+}
+
+_cwr_worktrees() {
+    local -a worktrees
+    worktrees=(.worktrees/*(/N:t))
+    compadd -- $worktrees
+}

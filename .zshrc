@@ -15,6 +15,10 @@ fi
 # Lazy load helper functions
 fpath=("${ZDOTDIR}/functions" $fpath)
 autoload -Uz $fpath[1]/*(.:t)
+if (( $+functions[compdef] )); then
+    autoload -Uz _cwr
+    compdef _cwr cwr
+fi
 
 # user paths
 [[ -d "$HOME/bin" ]] && export PATH=$HOME/bin:$PATH
