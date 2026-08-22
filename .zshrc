@@ -17,6 +17,15 @@ if (( ! ${+GRML_OSTYPE} )); then
     . "${ZDOTDIR}/grml"
 fi
 
+# Explicitly register local completion functions. compinit's dump cache can go
+# stale and miss newly-added files in ~/.local/completions, so force-register.
+if [[ -d ~/.local/completions ]]; then
+    fpath=(~/.local/completions $fpath)
+    autoload -Uz _worktree _xi
+    compdef _worktree worktree xi-worktree
+    compdef _xi xi
+fi
+
 # Lazy load helper functions
 fpath=("${ZDOTDIR}/functions" $fpath)
 autoload -Uz $fpath[1]/*(.:t)
