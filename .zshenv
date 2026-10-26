@@ -1,3 +1,10 @@
+# Add ~/.local/completions to fpath before compinit runs. compinit is invoked
+# from /etc/zsh/zshrc (the system grml config), which is sourced before .zshrc,
+# so this must live in .zshenv for its #compdef files to be scanned.
+if [[ -d ~/.local/completions ]]; then
+    fpath=(~/.local/completions $fpath)
+fi
+
 # Remote SSH login with agent forwarding: replace OpenSSH's ephemeral
 # socket path with a stable per-user path for tmux and long-lived shells.
 # Skip if SSH_AUTH_SOCK is already pointing at the stable symlink — it has

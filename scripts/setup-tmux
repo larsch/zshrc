@@ -4,7 +4,7 @@
 # https://github.com/tmux-plugins/tmux-sensible
 set -eu
 command -v tmux >/dev/null || exit 1
-if [[ -d ~/.tmux/plugins/tpm ]]; then
+if [ -d ~/.tmux/plugins/tpm ]; then
 	git -C ~/.tmux/plugins/tpm pull
 else
 	git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
@@ -16,6 +16,7 @@ set -g pane-base-index 1
 set-window-option -g pane-base-index 1
 set -g @catppuccin_flavor "mocha"
 set -g @catppuccin_window_status_style "rounded"
+set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.tmux/plugins/"
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'catppuccin/tmux'
@@ -23,5 +24,6 @@ run '~/.tmux/plugins/tpm/tpm'
 set -g mouse on
 set -sg escape-time 250
 __EOF__
+tmux start-server \; set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.tmux/plugins/"
 $HOME/.tmux/plugins/tpm/bin/install_plugins
 $HOME/.tmux/plugins/tpm/bin/update_plugins all

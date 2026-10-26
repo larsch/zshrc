@@ -8,30 +8,18 @@ fi
 # default to xterm if terminfo is missing
 [ -e "/usr/share/terminfo/${TERM:0:1}/${TERM}" ] || export TERM=xterm
 
-if [[ -d ~/.local/completions ]]; then
-    fpath=(~/.local/completions $fpath)
-fi
-
 if (( ! ${+GRML_OSTYPE} )); then
     [[ -f "${ZDOTDIR}/grml" ]] || curl -s -L -o "${ZDOTDIR}/grml" https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
     . "${ZDOTDIR}/grml"
-fi
-
-# Explicitly register local completion functions. compinit's dump cache can go
-# stale and miss newly-added files in ~/.local/completions, so force-register.
-if [[ -d ~/.local/completions ]]; then
-    fpath=(~/.local/completions $fpath)
-    autoload -Uz _worktree _xi
-    compdef _worktree worktree xi-worktree
-    compdef _xi xi
 fi
 
 # Lazy load helper functions
 fpath=("${ZDOTDIR}/functions" $fpath)
 autoload -Uz $fpath[1]/*(.:t)
 if (( $+functions[compdef] )); then
-    autoload -Uz _cwr
+    autoload -Uz _cwr _wrun
     compdef _cwr cwr
+    compdef _wrun wrun
 fi
 
 # user paths
@@ -200,6 +188,9 @@ if whence fzf >/dev/null; then
     bindkey "^[o" fzf-file-widget
     source "${ZDOTDIR}/fzf.zsh"
     FZF_PREVIEW_COMMAND="${ZDOTDIR}/fzf-preview.sh {}"
+    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix'
+    export FZF_ALT_C_COMMAND='fd --type d --strip-cwd-prefix'
+    export FZF_ALT_SHIFT_E_COMMAND='fd --type f --strip-cwd-prefix'
     FZF_ALT_SHIFT_E_OPTS="'--prompt=> vim ' --preview '${FZF_PREVIEW_COMMAND}'"
     FZF_ALT_C_OPTS="'--prompt=> cd ' --preview 'eza --colour=always -T {} | head -200'"
     FZF_CTRL_T_OPTS="--preview '${FZF_PREVIEW_COMMAND}'"
@@ -273,11 +264,48 @@ if [ -e /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.z
     . /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-# incognito mode
-if [[ -n "$ZSH_NO_HISTORY" ]]; then
-	unset HISTFILE
-	SAVEHIST=0
-    grml_theme_add_token incognito ' 󰗹 ' '%K{#400000}%F{#ff0000}' '%f%k '
-    # note: the default items can be seen with `which prompt_grml_precmd`
-    zstyle ':prompt:grml:left:setup' items incognito rc change-root user at host path vcs percent
+# --- Generic ZSH mode system ---
+# Set ZSH_MODE to activate a mode. Any value works — e.g. ZSH_MODE=staging zsh.
+# The mode name appears in the prompt with a default look.
+# Customize specific modes below (icon, colors, setup actions).
+
+typeset -A ZSH_MODE_ICONS ZSH_MODE_FG ZSH_MODE_BG ZSH_MODE_SETUP
+
+# incognito: disables history, shows red indicator
+ZSH_MODE_ICONS[incognito]='󰗹'
+ZSH_MODE_BG[incognito]='%K{#400000}'
+ZSH_MODE_FG[incognito]='%F{#ff0000}'
+ZSH_MODE_SETUP[incognito]='unset HISTFILE; SAVEHIST=0'
+
+# --- Backward compatibility: ZSH_NO_HISTORY implies ZSH_MODE=incognito ---
+[[ -n "$ZSH_NO_HISTORY" && -z "$ZSH_MODE" ]] && ZSH_MODE=incognito
+
+# Dynamic token: renders the active mode, falling back to (mode_name)
+function _zsh_mode_token() {
+    local mode=${ZSH_MODE:-}
+    if [[ -z $mode ]]; then
+        REPLY=''
+        return
+    fi
+    local icon
+    if [[ -n ${ZSH_MODE_ICONS[$mode]+x} ]]; then
+        icon=${ZSH_MODE_ICONS[$mode]}
+    else
+        icon="($mode)"
+    fi
+    local bg=${ZSH_MODE_BG[$mode]:-}
+    local fg=${ZSH_MODE_FG[$mode]:-}
+    REPLY="${bg}${fg}${icon} "
+}
+
+# Register the mode token once (uses a function so it adapts dynamically)
+if ! grml_theme_has_token mode 2>/dev/null; then
+    grml_theme_add_token mode -f _zsh_mode_token '' '%f%k'
+    # default left items can be seen with: whence -f prompt_grml_precmd
+    zstyle ':prompt:grml:left:setup' items mode rc change-root user at host path vcs percent
+fi
+
+# Run setup actions for the active mode (if defined)
+if [[ -n "$ZSH_MODE" && -n "${ZSH_MODE_SETUP[$ZSH_MODE]}" ]]; then
+    eval "${ZSH_MODE_SETUP[$ZSH_MODE]}"
 fi

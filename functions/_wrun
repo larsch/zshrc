@@ -1,0 +1,16 @@
+#compdef wrun
+
+_wrun() {
+    _arguments \
+        '1:worktree branch:_wrun_worktree_branches' \
+        '*:cargo run argument:'
+}
+
+_wrun_worktree_branches() {
+    local root
+    root=$(git rev-parse --show-toplevel 2>/dev/null) || return
+
+    local -a branches
+    branches=( ${(f)"$(git -C "$root" worktree list --porcelain 2>/dev/null | awk '$1 == "branch" && $2 ~ /^refs\/heads\// { sub(/^refs\/heads\//, "", $2); print $2 }')"} )
+    compadd -- $branches
+}

@@ -3,7 +3,7 @@ fzf-edit-widget() {
   setopt localoptions pipefail no_aliases 2> /dev/null
   local file="$(
     FZF_DEFAULT_COMMAND=${FZF_ALT_SHIFT_E_COMMAND:-} \
-    FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --walker=file,follow,hidden --scheme=path" "${FZF_ALT_SHIFT_E_OPTS-} +m") \
+    FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --walker=file,follow --scheme=path" "${FZF_ALT_SHIFT_E_OPTS-} +m") \
     FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd) < /dev/tty)"
   if [[ -z "$file" ]]; then
     zle redisplay
